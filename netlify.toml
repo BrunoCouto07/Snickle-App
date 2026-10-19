@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # This is a TanStack Start app, not Next.js; skip the UI-installed Next.js runtime plugin
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
