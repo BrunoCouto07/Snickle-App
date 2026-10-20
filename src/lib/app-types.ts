@@ -30,6 +30,14 @@ export interface Student {
   customWorldId?: string;
   /** Client-side local photo (base64). Never sent to any server. */
   photoUrl?: string;
+  /** Unlocked item IDs from the Star Token Store */
+  unlockedItems?: string[];
+  /** Equipped avatar frame ID */
+  activeFrame?: string;
+  /** Equipped avatar background ID */
+  activeBackground?: string;
+  /** Equipped frame gem or adornment ID */
+  activeAdornment?: string;
 }
 
 export interface CategoryOption {

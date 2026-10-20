@@ -431,15 +431,19 @@ const student = (
   theme,
   accessories: acc,
   stars,
+  unlockedItems: ["frame_bronze", "bg_parchment", "adorn_none"],
+  activeFrame: "frame_bronze",
+  activeBackground: "bg_parchment",
+  activeAdornment: "adorn_none",
 });
 
 export const DEFAULT_STATE: AppState = {
   students: [
-    student("ST-001", "Aurora", "space", ["cap"], 0),
-    student("ST-002", "Robert", "farm", ["bow"], 0),
-    student("ST-003", "Camari", "sea", ["glasses"], 0),
-    student("ST-004", "Lucy", "forest", ["crown"], 0),
-    student("ST-005", "Diego", "superhero", ["star"], 0),
+    student("ST-001", "Aurora", "space", ["cap"], 4),
+    student("ST-002", "Robert", "farm", ["bow"], 2),
+    student("ST-003", "Camari", "sea", ["glasses"], 6),
+    student("ST-004", "Lucy", "forest", ["crown"], 3),
+    student("ST-005", "Diego", "superhero", ["star"], 8),
   ],
   categories: DEFAULT_CATEGORIES,
   choices: [],

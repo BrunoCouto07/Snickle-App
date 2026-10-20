@@ -584,9 +584,58 @@ export function AdminDashboard({
                     </option>
                   ))}
                 </select>
-                <span className="text-xs font-bold text-inksoft">
-                  {s.id} · {s.stars} ★
-                </span>
+                {/* Teacher Manual Star Tokens Modifier */}
+                <div className="flex items-center gap-1.5 rounded-xl border border-ink/15 bg-card-warm px-2 py-1">
+                  <Star className="size-3.5 fill-honey text-honey" />
+                  <span className="font-display font-bold text-xs text-ink min-w-[20px] text-center">
+                    {s.stars}
+                  </span>
+                  <div className="flex items-center gap-0.5 ml-1">
+                    <button
+                      onClick={() =>
+                        update((st) => ({
+                          ...st,
+                          students: st.students.map((x) =>
+                            x.id === s.id ? { ...x, stars: Math.max(0, x.stars - 1) } : x,
+                          ),
+                        }))
+                      }
+                      disabled={s.stars <= 0}
+                      title="Deduct 1 Star Token"
+                      className="size-6 grid place-items-center rounded bg-paper border border-ink/10 text-xs font-bold text-ink hover:bg-honey disabled:opacity-30 cursor-pointer"
+                    >
+                      -1
+                    </button>
+                    <button
+                      onClick={() =>
+                        update((st) => ({
+                          ...st,
+                          students: st.students.map((x) =>
+                            x.id === s.id ? { ...x, stars: x.stars + 1 } : x,
+                          ),
+                        }))
+                      }
+                      title="Add 1 Star Token"
+                      className="size-6 grid place-items-center rounded bg-paper border border-ink/10 text-xs font-bold text-ink hover:bg-honey cursor-pointer"
+                    >
+                      +1
+                    </button>
+                    <button
+                      onClick={() =>
+                        update((st) => ({
+                          ...st,
+                          students: st.students.map((x) =>
+                            x.id === s.id ? { ...x, stars: x.stars + 5 } : x,
+                          ),
+                        }))
+                      }
+                      title="Add 5 Star Tokens"
+                      className="px-1.5 h-6 grid place-items-center rounded bg-paper border border-ink/10 text-[11px] font-bold text-ink hover:bg-honey cursor-pointer"
+                    >
+                      +5
+                    </button>
+                  </div>
+                </div>
                 <button
                   onClick={() => setEditingStudent(s)}
                   aria-label={`Edit avatar for ${s.name}`}

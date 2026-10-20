@@ -506,12 +506,14 @@ export function GameScreen({
   }
 
   return (
-    <div className="card-pop p-5" dir={lang === "ar" ? "rtl" : "ltr"}>
-      <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+    <div className="card-pop p-4 sm:p-5" dir={lang === "ar" ? "rtl" : "ltr"}>
+      {/* Header Bar */}
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={onBack}
-            className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink/10"
+            className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink/10 hover:bg-card-warm transition-colors cursor-pointer"
+            aria-label="Back to roster"
           >
             <ArrowLeft className="size-5" />
           </button>
@@ -520,15 +522,17 @@ export function GameScreen({
             <div className="font-display truncate text-lg font-bold">
               {t.hi}, {student.name}!
             </div>
-            <div className="font-hand text-lg text-inksoft">{t.pickFavorites}</div>
+            <div className="font-hand text-base sm:text-lg text-inksoft">{t.pickFavorites}</div>
           </div>
         </div>
-        <div className="flex shrink-0 items-center rounded-full bg-card-warm p-1 text-sm font-bold">
+        <div className="flex shrink-0 self-end sm:self-center items-center rounded-full bg-card-warm p-1 text-sm font-bold">
           {(["simple", "advanced"] as const).map((m) => (
             <button
               key={m}
               onClick={() => onModeChange(m)}
-              className={`font-display rounded-full px-4 py-2 ${state.mode === m ? "bg-ink text-cream" : "text-inksoft"}`}
+              className={`font-display rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 transition-all cursor-pointer ${
+                state.mode === m ? "bg-ink text-cream shadow-sm" : "text-inksoft hover:text-ink"
+              }`}
             >
               {m === "simple" ? t.simple : t.advanced}
             </button>
@@ -536,29 +540,34 @@ export function GameScreen({
         </div>
       </div>
 
-      <div className="mb-5 flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => speak(getCategoryQuestion(category, lang), lang)}
-          className="grid size-11 place-items-center rounded-xl border-2 border-sky/40 bg-sky/15 text-sky"
-          aria-label="Read question aloud"
-        >
-          <Volume2 className="size-5" />
-        </button>
-        <span className="font-display min-w-0 flex-1 text-lg font-bold">
-          {getCategoryQuestion(category, lang)}
-        </span>
-        {onFreshItems && (
-          <button
-            onClick={() => {
-              onActivity();
-              onFreshItems(category.id);
-            }}
-            className="font-display flex h-11 items-center gap-2 rounded-full border-2 border-honey/50 bg-honey/25 px-4 text-sm font-bold"
-          >
-            {category.smart ? <Sparkles className="size-4" /> : <RefreshCw className="size-4" />}{" "}
-            New picks
-          </button>
-        )}
+      {/* Question Prompt Card / Box with multi-line wrapping and comfortable cell height */}
+      <div className="mb-5 rounded-2xl border-2 border-ink/10 bg-paper/90 p-3.5 sm:p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-1 items-start sm:items-center gap-3">
+            <button
+              onClick={() => speak(getCategoryQuestion(category, lang), lang)}
+              className="grid size-11 shrink-0 place-items-center rounded-xl border-2 border-sky/40 bg-sky/15 text-sky hover:bg-sky/25 transition-colors cursor-pointer"
+              aria-label="Read question aloud"
+            >
+              <Volume2 className="size-5" />
+            </button>
+            <div className="font-display min-w-0 flex-1 text-lg sm:text-xl font-bold leading-snug break-words text-ink">
+              {getCategoryQuestion(category, lang)}
+            </div>
+          </div>
+          {onFreshItems && (
+            <button
+              onClick={() => {
+                onActivity();
+                onFreshItems(category.id);
+              }}
+              className="font-display flex h-10 sm:h-11 shrink-0 self-end sm:self-center items-center gap-2 rounded-full border-2 border-honey/50 bg-honey/25 px-3.5 sm:px-4 text-xs sm:text-sm font-bold hover:bg-honey/40 transition-colors cursor-pointer"
+            >
+              {category.smart ? <Sparkles className="size-4" /> : <RefreshCw className="size-4" />}{" "}
+              New picks
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="relative">
@@ -577,7 +586,7 @@ export function GameScreen({
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
                 onClick={() => choose(opt)}
                 disabled={selected !== null}
-                className={`relative flex min-h-56 flex-col items-center justify-center gap-2 rounded-2xl border-2 p-5 ${
+                className={`relative flex min-h-60 sm:min-h-56 flex-col items-center justify-between gap-2.5 rounded-2xl border-2 p-4 sm:p-5 transition-shadow hover:shadow-md cursor-pointer ${
                   selected === opt.id
                     ? "border-coral bg-coral/15 ring-4 ring-coral/20"
                     : "border-ink/10 bg-card-warm"
@@ -594,7 +603,7 @@ export function GameScreen({
                     <span aria-hidden>{opt.emoji}</span>
                   )}
                 </div>
-                <div className="font-display text-center text-xl font-bold">
+                <div className="font-display max-w-full text-center text-base sm:text-lg md:text-xl font-bold leading-snug break-words px-1">
                   {getOptionLabel(opt, lang)}
                 </div>
                 <div className="flex items-center gap-2">
@@ -606,7 +615,7 @@ export function GameScreen({
                       e.stopPropagation();
                       speak(getOptionLabel(opt, lang), lang);
                     }}
-                    className="grid size-9 place-items-center rounded-full border-2 border-ink/10 bg-paper text-inksoft"
+                    className="grid size-9 place-items-center rounded-full border-2 border-ink/10 bg-paper text-inksoft hover:text-ink hover:border-ink/20 transition-colors"
                   >
                     <Volume2 className="size-4" />
                   </span>
@@ -620,7 +629,7 @@ export function GameScreen({
                         onActivity();
                         onSwapItem(category.id, opt.id);
                       }}
-                      className="grid size-9 place-items-center rounded-full border-2 border-ink/10 bg-paper text-inksoft"
+                      className="grid size-9 place-items-center rounded-full border-2 border-ink/10 bg-paper text-inksoft hover:text-ink hover:border-ink/20 transition-colors"
                     >
                       <Shuffle className="size-4" />
                     </span>
@@ -637,21 +646,22 @@ export function GameScreen({
         )}
       </div>
 
-      <div className="mt-4 flex items-center gap-2 rounded-2xl border-2 border-ink/10 bg-card-warm p-3">
-        <span className="font-hand min-w-0 flex-1 truncate text-2xl text-inksoft">
+      {/* Speech Prompt Cell: wrapping enabled, taller height, comfortable aesthetics on mobile */}
+      <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border-2 border-ink/10 bg-card-warm p-3.5 sm:p-4 min-h-[4.25rem] shadow-sm">
+        <div className="font-hand min-w-0 flex-1 text-xl sm:text-2xl text-inksoft leading-snug break-words whitespace-normal">
           {transcript ||
             (category ? `${t.say}: "${getCategoryQuestion(category, lang)}"` : t.sayPrompt)}
-        </span>
+        </div>
         <button
           onClick={startMic}
-          className={`grid size-11 shrink-0 place-items-center rounded-xl border-2 ${
+          className={`grid size-12 shrink-0 place-items-center rounded-xl border-2 transition-transform active:scale-95 cursor-pointer ${
             listening
-              ? "animate-pulse border-coral bg-coral text-cream"
-              : "border-coral/30 bg-coral/15 text-coral"
+              ? "animate-pulse border-coral bg-coral text-cream shadow-md"
+              : "border-coral/30 bg-coral/15 text-coral hover:bg-coral/25"
           }`}
           aria-label="Speak your answer"
         >
-          <Mic className="size-5" />
+          <Mic className="size-5 sm:size-6" />
         </button>
       </div>
 

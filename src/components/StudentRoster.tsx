@@ -20,11 +20,13 @@ export function StudentRoster({
   onSelect,
   onAdd,
   onEditStudent,
+  onOpenStore,
 }: {
   state: AppState;
   onSelect: (s: Student) => void;
   onAdd: () => void;
   onEditStudent?: (s: Student) => void;
+  onOpenStore?: (s: Student) => void;
 }) {
   const t = UI_TEXT[state.lang];
   const [columns, setColumns] = useState<ColumnOption>(() => {
@@ -83,6 +85,7 @@ export function StudentRoster({
             customWorlds={state.customWorlds}
             onSelect={onSelect}
             onEdit={onEditStudent}
+            onOpenStore={onOpenStore}
           />
         ))}
 
@@ -105,14 +108,20 @@ function StudentCard({
   customWorlds,
   onSelect,
   onEdit,
+  onOpenStore,
 }: {
   student: Student;
   customWorlds?: CustomWorld[];
   onSelect: (s: Student) => void;
   onEdit?: (s: Student) => void;
+  onOpenStore?: (s: Student) => void;
 }) {
   const [showQuickAction, setShowQuickAction] = useState(false);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pointerStartPos = useRef<{ x: number; y: number } | null>(null);
+  const suppressClickUntil = useRef<number>(0);
 
   const worldsList = customWorlds ?? DEFAULT_CUSTOM_WORLDS;
   const currentWorld = student.customWorldId
@@ -120,12 +129,24 @@ function StudentCard({
     : undefined;
   const worldLabel = currentWorld?.label ?? THEMES.find((x) => x.key === student.theme)?.label;
 
-  const handlePointerEnter = () => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    // 1500ms hover delay
-    hoverTimer.current = setTimeout(() => {
-      setShowQuickAction(true);
-    }, 1500);
+  const triggerShowMenu = () => {
+    if (persistTimer.current) clearTimeout(persistTimer.current);
+    setShowQuickAction(true);
+    // Menu persists for 5 seconds once it displays
+    persistTimer.current = setTimeout(() => {
+      setShowQuickAction(false);
+      persistTimer.current = null;
+    }, 5000);
+  };
+
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    // Hover activation for mouse pointers
+    if (e.pointerType === "mouse") {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+      hoverTimer.current = setTimeout(() => {
+        triggerShowMenu();
+      }, 650);
+    }
   };
 
   const handlePointerLeave = () => {
@@ -133,12 +154,71 @@ function StudentCard({
       clearTimeout(hoverTimer.current);
       hoverTimer.current = null;
     }
-    setShowQuickAction(false);
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    // Notice: quick action stays visible for its 5s persist duration
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartPos.current = { x: e.clientX, y: e.clientY };
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+
+    // 450ms long-tap detection
+    longPressTimer.current = setTimeout(() => {
+      suppressClickUntil.current = Date.now() + 800;
+      triggerShowMenu();
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        try {
+          navigator.vibrate(40);
+        } catch {
+          // Ignore vibration failure
+        }
+      }
+    }, 450);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!pointerStartPos.current) return;
+    const dx = e.clientX - pointerStartPos.current.x;
+    const dy = e.clientY - pointerStartPos.current.y;
+    // Cancel long tap if user is dragging/scrolling (moved > 10px)
+    if (Math.hypot(dx, dy) > 10) {
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+      }
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handlePointerCancel = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleCardClick = () => {
+    // If long tap just triggered, suppress card click so the user can click edit or store
+    if (Date.now() < suppressClickUntil.current) {
+      return;
+    }
+    onSelect(student);
   };
 
   useEffect(() => {
     return () => {
       if (hoverTimer.current) clearTimeout(hoverTimer.current);
+      if (persistTimer.current) clearTimeout(persistTimer.current);
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
     };
   }, []);
 
@@ -148,7 +228,16 @@ function StudentCard({
       whileHover={{ y: -3 }}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      onClick={() => onSelect(student)}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onClick={handleCardClick}
+      onContextMenu={(e) => {
+        if (showQuickAction || Date.now() < suppressClickUntil.current) {
+          e.preventDefault();
+        }
+      }}
       className="group relative grid cursor-pointer place-items-center rounded-2xl border-2 border-ink/10 bg-card-warm p-4 select-none transition-shadow hover:shadow-md"
       role="button"
       tabIndex={0}
@@ -159,29 +248,58 @@ function StudentCard({
         }
       }}
     >
-      {/* 1.5s Hover-Fade Quick Action Menu */}
+      {/* 5-Second Persistent Hover & Long-Tap Quick Action Menu (Store + Edit) */}
       <AnimatePresence>
-        {showQuickAction && onEdit && (
+        {showQuickAction && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -4 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-2.5 right-2.5 z-20"
+            className="absolute top-2 right-2 z-30 flex items-center gap-1.5"
             onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(student);
-              }}
-              className="flex items-center gap-1 rounded-full border-2 border-ink/15 bg-paper px-2.5 py-1 text-xs font-bold text-ink shadow-[2px_2px_0_#3A2E28] hover:bg-honey transition-colors"
-              title="Quick Edit Avatar"
-              aria-label={`Quick edit avatar for ${student.name}`}
-            >
-              <MoreHorizontal className="size-3.5" />
-              <Palette className="size-3 text-coral" />
-            </button>
+            {/* Quick Star Store Button */}
+            {onOpenStore && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowQuickAction(false);
+                  if (persistTimer.current) clearTimeout(persistTimer.current);
+                  onOpenStore(student);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerUp={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 rounded-full border-2 border-ink bg-honey px-2.5 py-1 text-xs font-black text-ink shadow-[2px_2px_0_#3A2E28] hover:bg-honey/85 active:scale-95 transition-all cursor-pointer"
+                title="Star Token Store"
+                aria-label={`Open Star Store for ${student.name}`}
+              >
+                <Star className="size-3.5 fill-ink text-ink" />
+                <span>Store</span>
+              </button>
+            )}
+
+            {/* Quick Edit Avatar Button */}
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowQuickAction(false);
+                  if (persistTimer.current) clearTimeout(persistTimer.current);
+                  onEdit(student);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerUp={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 rounded-full border-2 border-ink bg-paper px-2.5 py-1 text-xs font-bold text-ink shadow-[2px_2px_0_#3A2E28] hover:bg-honey active:scale-95 transition-all cursor-pointer"
+                title="Customize Student Avatar"
+                aria-label={`Customize avatar for ${student.name}`}
+              >
+                <Palette className="size-3 text-coral shrink-0" />
+                <span>Edit</span>
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -190,11 +308,22 @@ function StudentCard({
       <span className="font-display mt-2 truncate max-w-full text-lg font-bold">
         {student.name}
       </span>
-      <span className="flex items-center gap-1 text-xs font-bold text-inksoft">
-        {worldLabel}
-        <Star className="size-3 fill-honey text-honey" />
-        {student.stars}
-      </span>
+
+      {/* World Tag & Interactive Star Token Counter */}
+      <div className="flex items-center justify-between w-full mt-1.5 px-1">
+        <span className="text-xs font-bold text-inksoft truncate max-w-[90px]">{worldLabel}</span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenStore?.(student);
+          }}
+          className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-ink/15 bg-paper hover:bg-honey text-xs font-black text-ink shadow-[1px_1px_0_#3A2E28] transition-all cursor-pointer"
+          title="Open Star Token Store"
+        >
+          <Star className="size-3 fill-honey text-honey" />
+          <span>{student.stars}</span>
+        </button>
+      </div>
     </motion.div>
   );
 }

@@ -18,6 +18,7 @@ import { SupportTeacherButton, SupportTeacherModal } from "@/components/SupportT
 import { AppFooter } from "@/components/AppFooter";
 import { ContactModal } from "@/components/ContactModal";
 import { FeatureCoachmarks } from "@/components/FeatureCoachmarks";
+import { StarStoreModal } from "@/components/StarStoreModal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +50,7 @@ function Home() {
   const [active, setActive] = useState<Student | null>(null);
   const [building, setBuilding] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [storeStudent, setStoreStudent] = useState<Student | null>(null);
   const [locking, setLocking] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
@@ -225,6 +227,7 @@ function Home() {
             state={state}
             onAdd={() => setBuilding(true)}
             onEditStudent={(s) => setEditingStudent(s)}
+            onOpenStore={(s) => setStoreStudent(s)}
             onSelect={(s) => {
               setActive(s);
               bump();
@@ -312,6 +315,23 @@ function Home() {
           onAddCustomWorld={(w) =>
             update((st) => ({ ...st, customWorlds: [...(st.customWorlds ?? []), w] }))
           }
+          onOpenStore={() => {
+            if (editingStudent) {
+              setStoreStudent(editingStudent);
+            }
+          }}
+          onAdjustStars={(delta) => {
+            if (editingStudent) {
+              update((st) => ({
+                ...st,
+                students: st.students.map((existing) =>
+                  existing.id === editingStudent.id
+                    ? { ...existing, stars: Math.max(0, existing.stars + delta) }
+                    : existing,
+                ),
+              }));
+            }
+          }}
           onCancel={() => {
             setBuilding(false);
             setEditingStudent(null);
@@ -327,12 +347,39 @@ function Home() {
             } else {
               update((st) => ({
                 ...st,
-                students: [...st.students, { ...s, id: `ST-${Date.now()}`, stars: 0 }],
+                students: [
+                  ...st.students,
+                  {
+                    ...s,
+                    id: `ST-${Date.now()}`,
+                    stars: s.stars ?? 0,
+                    unlockedItems: ["frame_bronze", "bg_parchment", "adorn_none"],
+                    activeFrame: s.activeFrame || "frame_bronze",
+                    activeBackground: s.activeBackground || "bg_parchment",
+                    activeAdornment: s.activeAdornment || "adorn_none",
+                  },
+                ],
               }));
             }
             setBuilding(false);
             setEditingStudent(null);
           }}
+        />
+      )}
+
+      {storeStudent && (
+        <StarStoreModal
+          student={state.students.find((s) => s.id === storeStudent.id) ?? storeStudent}
+          customWorlds={state.customWorlds}
+          teacherPin={state.pin || "1234"}
+          onUpdateStudent={(updated) => {
+            update((st) => ({
+              ...st,
+              students: st.students.map((s) => (s.id === updated.id ? updated : s)),
+            }));
+            setStoreStudent(updated);
+          }}
+          onClose={() => setStoreStudent(null)}
         />
       )}
 
