@@ -31,6 +31,7 @@ export function TeacherLock({
   }, [a, b]);
 
   const shuffledPad = useMemo(() => {
+    void step;
     const keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", ""];
 
     // True Fisher-Yates shuffle for all 12 buttons
