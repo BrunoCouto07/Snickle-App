@@ -19,17 +19,18 @@ import { AppFooter } from "@/components/AppFooter";
 import { ContactModal } from "@/components/ContactModal";
 import { FeatureCoachmarks } from "@/components/FeatureCoachmarks";
 import { StarStoreModal } from "@/components/StarStoreModal";
+import { LaunchSplash } from "@/components/LaunchSplash";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kid Choices Connect" },
+      { title: "Snickle" },
       {
         name: "description",
         content:
           "Pre-K gamified preference collector and teacher analytics dashboard with student avatars, multilingual audio, and printable choice cards.",
       },
-      { property: "og:title", content: "Kid Choices Connect" },
+      { property: "og:title", content: "Snickle" },
       {
         property: "og:description",
         content:
@@ -130,7 +131,7 @@ function Home() {
               <Star className="size-6 fill-ink text-ink" />
             </div>
             <div className="min-w-0 leading-tight">
-              <h1 className="font-display truncate text-lg font-bold">Kid Choices Connect</h1>
+              <h1 className="font-display truncate text-lg font-bold">Snickle</h1>
               <p className="font-hand -mt-1 text-base text-inksoft">
                 empowering every learner&apos;s voice
               </p>
@@ -352,6 +353,7 @@ function Home() {
                   {
                     ...s,
                     id: `ST-${Date.now()}`,
+                    accessories: [],
                     stars: s.stars ?? 0,
                     unlockedItems: ["frame_bronze", "bg_parchment", "adorn_none"],
                     activeFrame: s.activeFrame || "frame_bronze",
@@ -440,6 +442,8 @@ function Home() {
           enabled={state.showFeatureHints !== false}
         />
       )}
+
+      <LaunchSplash />
 
       <AppFooter
         onOpenGuide={() => setShowOnboarding(true)}

@@ -110,8 +110,8 @@ export function ContactModal({ onClose }: Props) {
 
             <p className="text-xs leading-relaxed text-inksoft mb-5">
               Built by an educator, intensive needs paraprofessional, and co-parenting father. Share
-              classroom ideas, report requests, or suggestions to make Kid Choices Connect even
-              better for kids and families.
+              classroom ideas, report requests, or suggestions to make Snickle even better for kids
+              and families.
             </p>
 
             {error && (

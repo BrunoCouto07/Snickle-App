@@ -24,6 +24,7 @@ import {
   type StoreItem,
 } from "@/lib/store-items";
 import { Avatar } from "./Avatar";
+import { FrameArtOverlay } from "./FrameArtOverlay";
 import { playAudio, speak } from "@/lib/speech";
 
 interface Props {
@@ -459,8 +460,36 @@ export function StarStoreModal({
                     {/* Item Top Info */}
                     <div>
                       <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">{item.icon}</span>
+                        <div className="flex items-center gap-2.5">
+                          {item.category === "frame" ? (
+                            <div
+                              className={`relative grid size-10 shrink-0 place-items-center rounded-full border-2 bg-paper/80 ${
+                                item.frameBorderClass ?? "border-ink/20"
+                              } ${item.frameShadowClass ?? ""}`}
+                            >
+                              <FrameArtOverlay frameId={item.id} />
+                              <span className="relative z-10 text-lg" aria-hidden>
+                                {item.icon}
+                              </span>
+                            </div>
+                          ) : item.category === "background" ? (
+                            <div
+                              className={`size-10 shrink-0 rounded-full border-2 border-ink/20 grid place-items-center ${
+                                item.bgClass ?? "bg-paper"
+                              }`}
+                              style={item.bgStyle}
+                            >
+                              <span className="text-lg" aria-hidden>
+                                {item.icon}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="size-10 shrink-0 rounded-full border-2 border-ink/10 bg-paper grid place-items-center shadow-xs">
+                              <span className="text-xl" aria-hidden>
+                                {item.icon}
+                              </span>
+                            </div>
+                          )}
                           <div>
                             <h4 className="font-display font-bold text-sm text-ink leading-tight">
                               {item.name}

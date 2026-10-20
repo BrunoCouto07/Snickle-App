@@ -27,7 +27,7 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Welcome to Kid Choices Connect",
+    title: "Welcome to Snickle",
     badge: "Heart & Legacy in Education",
     icon: <GraduationCap className="size-8 text-honey" />,
     content:
@@ -99,7 +99,7 @@ const STEPS: Step[] = [
     badge: "Safe & Reliable",
     icon: <ShieldCheck className="size-8 text-leaf" />,
     content:
-      "Built for real school realities with spotty Wi-Fi. Kid Choices Connect runs entirely on your device with no required accounts, keeping all student records private.",
+      "Built for real school realities with spotty Wi-Fi. Snickle runs entirely on your device with no required accounts, keeping all student records private.",
     highlights: [
       {
         title: "FERPA & COPPA Safe",

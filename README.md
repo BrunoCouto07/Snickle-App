@@ -1,4 +1,4 @@
-# Kid Choices Connect
+# Snickle
 
 Build a responsive, offline-first web app using React, Tailwind CSS, Lucide React icons, and Framer Motion. This app is a dual-mode tool: a gamified, highly visual preference collector for Pre-K/Kindergarten students, and an Admin Analytics Dashboard for teachers.
 

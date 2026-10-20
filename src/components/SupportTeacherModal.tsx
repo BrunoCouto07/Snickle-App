@@ -50,9 +50,9 @@ export function SupportTeacherModal({ onClose }: { onClose: () => void }) {
         <div className="mb-4 rounded-2xl border-2 border-honey/30 bg-honey/10 p-4 text-xs leading-relaxed text-ink">
           <p className="mb-2 font-bold text-sm">Made with ❤️ for Classrooms Worldwide</p>
           <p className="text-inksoft">
-            Kid Choices Connect was built by an early childhood educator to give young students in
-            Pre-K, ECSE, and Kindergarten classrooms an accessible, joyful way to express their
-            choices. It is 100% free and open for teachers everywhere.
+            Snickle was built by an early childhood educator to give young students in Pre-K, ECSE,
+            and Kindergarten classrooms an accessible, joyful way to express their choices. It is
+            100% free and open for teachers everywhere.
           </p>
         </div>
 

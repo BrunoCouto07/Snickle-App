@@ -77,13 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Kid Choices Connect" },
+      { title: "Snickle" },
       {
         name: "description",
         content:
           "Gamified choice collector and teacher analytics dashboard for Pre-K through 5th grade and families, with student avatars, chipper multilingual audio, and printable choice cards.",
       },
-      { property: "og:title", content: "Kid Choices Connect" },
+      { property: "og:title", content: "Snickle" },
       {
         property: "og:description",
         content:

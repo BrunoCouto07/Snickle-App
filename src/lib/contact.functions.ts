@@ -41,11 +41,11 @@ export const sendContactMessage = createServerFn({ method: "POST" })
             Authorization: `Bearer ${resendKey}`,
           },
           body: JSON.stringify({
-            from: "Kid Choices Connect <notifications@kidchoicesconnect.app>",
+            from: "Snickle <notifications@snickle.app>",
             to: [CREATOR_EMAIL],
             reply_to: data.email,
-            subject: `[Kid Choices Connect] ${data.subject} (from ${data.name} - ${data.role})`,
-            text: `New contact form submission from Kid Choices Connect:\n\nName: ${data.name}\nEmail: ${data.email}\nRole: ${data.role}\nSubject: ${data.subject}\n\nMessage:\n${data.message}\n\nTimestamp: ${timestamp}`,
+            subject: `[Snickle] ${data.subject} (from ${data.name} - ${data.role})`,
+            text: `New contact form submission from Snickle:\n\nName: ${data.name}\nEmail: ${data.email}\nRole: ${data.role}\nSubject: ${data.subject}\n\nMessage:\n${data.message}\n\nTimestamp: ${timestamp}`,
           }),
         });
         if (!response.ok) {

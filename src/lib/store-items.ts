@@ -88,7 +88,7 @@ export const STORE_ITEMS: StoreItem[] = [
     icon: "🥇",
     description: "Radiant golden brilliance celebrating great participation.",
     frameBorderClass: "border-[#f59e0b]",
-    frameShadowClass: "shadow-[0_0_0_2px_#d97706,0_3px_10px_rgba(245,158,11,0.5)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#d97706,0_0_14px_rgba(245,158,11,0.65)]",
     frameOuterClass: "bg-gradient-to-tr from-[#d97706] via-[#fbbf24] to-[#fef08a]",
   },
   {
@@ -98,9 +98,9 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 4,
     tier: "rare",
     icon: "🌿",
-    description: "Intertwined natural forest foliage and emerald sprout accents.",
+    description: "Living forest vines with leafy sprouts and emerald bioluminescent glow.",
     frameBorderClass: "border-[#22c55e]",
-    frameShadowClass: "shadow-[0_0_0_2px_#15803d,0_3px_8px_rgba(34,197,94,0.4)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#15803d,0_0_16px_rgba(34,197,94,0.75)]",
     frameOuterClass: "bg-gradient-to-tr from-[#166534] via-[#22c55e] to-[#86efac]",
   },
   {
@@ -110,9 +110,9 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 4,
     tier: "rare",
     icon: "🪸",
-    description: "Aquatic oceanic ring with shimmering deep-sea reef gradients.",
+    description: "Aquatic oceanic ring with shimmering deep-sea reef gradients and bubbles.",
     frameBorderClass: "border-[#06b6d4]",
-    frameShadowClass: "shadow-[0_0_0_2px_#0891b2,0_3px_10px_rgba(6,182,212,0.4)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#0891b2,0_0_15px_rgba(6,182,212,0.65)]",
     frameOuterClass: "bg-gradient-to-tr from-[#0e7490] via-[#06b6d4] to-[#67e8f9]",
   },
   {
@@ -122,9 +122,9 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 4,
     tier: "rare",
     icon: "🫧",
-    description: "A playful ring of glossy, iridescent sky-blue soap bubbles.",
+    description: "A playful ring of glossy, iridescent sky-blue floating soap bubbles.",
     frameBorderClass: "border-[#38bdf8]",
-    frameShadowClass: "shadow-[0_0_0_2px_#0284c7,0_0_12px_rgba(56,189,248,0.5)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#0284c7,0_0_15px_rgba(56,189,248,0.7)]",
     frameOuterClass: "bg-gradient-to-tr from-[#0284c7] via-[#7dd3fc] to-[#e0f2fe]",
   },
   {
@@ -134,9 +134,10 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 5,
     tier: "epic",
     icon: "🕹️",
-    description: "Electrifying magenta and cyan neon glow inspired by retro games.",
+    description: "Electrifying magenta and cyan neon laser aura pulsing with retro arcade energy.",
     frameBorderClass: "border-[#ec4899]",
-    frameShadowClass: "shadow-[0_0_0_2px_#06b6d4,0_0_14px_rgba(236,72,153,0.6)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#06b6d4,0_0_18px_rgba(236,72,153,0.85),0_0_30px_rgba(6,182,212,0.6)]",
     frameOuterClass: "bg-gradient-to-tr from-[#ec4899] via-[#8b5cf6] to-[#06b6d4]",
   },
   {
@@ -146,9 +147,9 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 6,
     tier: "epic",
     icon: "👑",
-    description: "Deep regal crimson with intricate gold filigree embossing.",
+    description: "Deep regal crimson with golden filigree and glowing faceted ruby stones.",
     frameBorderClass: "border-[#e11d48]",
-    frameShadowClass: "shadow-[0_0_0_2px_#f59e0b,0_4px_12px_rgba(225,29,72,0.5)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#f59e0b,0_0_16px_rgba(225,29,72,0.75)]",
     frameOuterClass: "bg-gradient-to-tr from-[#9f1239] via-[#e11d48] to-[#f59e0b]",
   },
   {
@@ -158,9 +159,10 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 7,
     tier: "epic",
     icon: "☀️",
-    description: "Fiery corona of solar warmth and radiant gold energy.",
+    description: "Fiery corona of solar warmth and radiant gold heat rays glowing outward.",
     frameBorderClass: "border-[#f97316]",
-    frameShadowClass: "shadow-[0_0_0_2px_#ea580c,0_0_14px_rgba(249,115,22,0.6)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#ea580c,0_0_20px_rgba(249,115,22,0.85),0_0_35px_rgba(250,204,21,0.6)]",
     frameOuterClass: "bg-gradient-to-tr from-[#c2410c] via-[#f97316] to-[#fde047]",
   },
   {
@@ -170,9 +172,11 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 7,
     tier: "epic",
     icon: "🌌",
-    description: "Deep space ultraviolet glow infused with galactic stardust.",
+    description:
+      "Interstellar space nebula with twinkling stars, galactic stardust, and cosmic violet-cyan glow.",
     frameBorderClass: "border-[#8b5cf6]",
-    frameShadowClass: "shadow-[0_0_0_2px_#6d28d9,0_0_15px_rgba(139,92,246,0.6)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#6d28d9,0_0_20px_rgba(168,85,247,0.9),0_0_35px_rgba(59,130,246,0.6)]",
     frameOuterClass: "bg-gradient-to-tr from-[#581c87] via-[#8b5cf6] to-[#c084fc]",
   },
   {
@@ -182,9 +186,10 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 8,
     tier: "elite",
     icon: "🌈",
-    description: "All the colors of the rainbow dancing in a prismatic halo.",
+    description: "Spectral rainbow halo dancing with prismatic facets and crystalline light.",
     frameBorderClass: "border-[#f43f5e]",
-    frameShadowClass: "shadow-[0_0_0_2px_#3b82f6,0_0_16px_rgba(234,179,8,0.6)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#3b82f6,0_0_18px_rgba(234,179,8,0.8),0_0_32px_rgba(168,85,247,0.6)]",
     frameOuterClass: "bg-gradient-to-tr from-[#ef4444] via-[#eab308] via-[#22c55e] to-[#3b82f6]",
   },
   {
@@ -194,9 +199,9 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 8,
     tier: "elite",
     icon: "⚡",
-    description: "High-tech circuit board pulsing with kinetic neon cyber energy.",
+    description: "High-tech circuit board pulsing with kinetic neon green cyber matrix energy.",
     frameBorderClass: "border-[#10b981]",
-    frameShadowClass: "shadow-[0_0_0_2px_#064e3b,0_0_15px_rgba(16,185,129,0.7)]",
+    frameShadowClass: "shadow-[0_0_0_2px_#064e3b,0_0_18px_rgba(16,185,129,0.85)]",
     frameOuterClass: "bg-gradient-to-tr from-[#022c22] via-[#059669] to-[#34d399]",
   },
   {
@@ -206,9 +211,11 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 9,
     tier: "elite",
     icon: "🐉",
-    description: "Forged from mythical dragon scales with ember-glowing edges.",
+    description:
+      "Forged from mythical dragon scales with molten ember tips and fierce dragon flame glow.",
     frameBorderClass: "border-[#b91c1c]",
-    frameShadowClass: "shadow-[0_0_0_2px_#450a0a,0_0_16px_rgba(185,28,28,0.7)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#450a0a,0_0_20px_rgba(239,68,68,0.85),0_0_32px_rgba(249,115,22,0.65)]",
     frameOuterClass: "bg-gradient-to-tr from-[#1c1917] via-[#7f1d1d] to-[#dc2626]",
   },
   {
@@ -218,9 +225,11 @@ export const STORE_ITEMS: StoreItem[] = [
     cost: 10,
     tier: "elite",
     icon: "💎",
-    description: "Pristine multifaceted diamond rim refracting celestial light.",
+    description:
+      "Pristine multifaceted diamond rim refracting celestial starbursts and icy starlight.",
     frameBorderClass: "border-[#e0f2fe]",
-    frameShadowClass: "shadow-[0_0_0_2px_#38bdf8,0_0_18px_rgba(224,242,254,0.8)]",
+    frameShadowClass:
+      "shadow-[0_0_0_2px_#38bdf8,0_0_22px_rgba(224,242,254,0.95),0_0_35px_rgba(56,189,248,0.7)]",
     frameOuterClass: "bg-gradient-to-tr from-[#0284c7] via-[#bae6fd] to-[#ffffff]",
   },
 

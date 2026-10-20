@@ -19,7 +19,7 @@ export function AppFooter({ onOpenGuide, onOpenContact, onOpenBackup, onOpenSupp
               <span className="grid size-7 place-items-center rounded-lg bg-honey text-ink text-sm font-bold shadow-xs">
                 ⭐
               </span>
-              <h4 className="font-display text-base font-bold text-ink">Kid Choices Connect</h4>
+              <h4 className="font-display text-base font-bold text-ink">Snickle</h4>
             </div>
             <p className="text-xs leading-relaxed text-inksoft mb-3">
               Founded by an elementary intensive needs paraprofessional, daycare administrator,
@@ -105,9 +105,8 @@ export function AppFooter({ onOpenGuide, onOpenContact, onOpenBackup, onOpenSupp
 
         <div className="pt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-inksoft">
           <p className="font-hand text-base">
-            Kid Choices Connect · Built with{" "}
-            <Heart className="inline size-3.5 fill-coral text-coral" /> for kids, educators &
-            families everywhere
+            Snickle · Built with <Heart className="inline size-3.5 fill-coral text-coral" /> for
+            kids, educators & families everywhere
           </p>
           <p className="text-[11px] text-inksoft">
             COPPA & FERPA Minded • Photos & choices stay strictly on this device

@@ -12,6 +12,7 @@ import {
   STORE_ITEMS,
   getStoreItem,
 } from "@/lib/store-items";
+import { STUDENT_CHARACTER_AVATARS, resolveStudentFace } from "@/lib/avatar-faces";
 import { Avatar } from "./Avatar";
 import { LocalPhotoEditor } from "./LocalPhotoEditor";
 
@@ -46,8 +47,13 @@ export function AvatarBuilder({
   const [customWorldId, setCustomWorldId] = useState<string>(
     initial?.customWorldId ?? allWorlds[0]?.id ?? "",
   );
-  const [accessories, setAccessories] = useState<string[]>(initial?.accessories ?? []);
-  const [face, setFace] = useState<string>(initial?.face ?? "");
+  const currentWorld = allWorlds.find((w) => w.id === customWorldId);
+  const currentWorldEmoji = currentWorld?.emoji ?? "🛸";
+
+  const [accessories] = useState<string[]>([]);
+  const [face, setFace] = useState<string>(() =>
+    resolveStudentFace(initial?.face, initial?.name || "student", currentWorldEmoji),
+  );
   const [tint, setTint] = useState<string>(initial?.tint ?? "");
   const [photoUrl, setPhotoUrl] = useState<string>(initial?.photoUrl ?? "");
   const [editingPhoto, setEditingPhoto] = useState(false);
@@ -94,16 +100,17 @@ export function AvatarBuilder({
   };
 
   const save = () => {
+    const resolvedFace = resolveStudentFace(face, name.trim() || "student", currentWorldEmoji);
     const base: Omit<Student, "id"> = {
       name: name.trim(),
       theme,
-      accessories,
+      accessories: [], // Clean avatar: NO extra emojis unless purchased from star store
       stars,
       activeFrame,
       activeBackground,
       activeAdornment,
       unlockedItems,
-      ...(face ? { face } : {}),
+      face: resolvedFace,
       ...(tint ? { tint } : {}),
       ...(customWorldId ? { customWorldId } : {}),
       ...(photoUrl ? { photoUrl } : {}),
@@ -349,15 +356,23 @@ export function AvatarBuilder({
         </div>
 
         {/* World / Team Selection */}
-        <p className="font-display mb-2 text-sm font-bold uppercase text-inksoft">
-          Class World / Group
-        </p>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="font-display text-sm font-bold uppercase text-inksoft">
+            Class World / Group Team
+          </p>
+          <span className="text-xs font-semibold text-inksoft">Corner Badge</span>
+        </div>
         <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {allWorlds.map((w) => (
             <button
               key={w.id}
               type="button"
-              onClick={() => setCustomWorldId(w.id)}
+              onClick={() => {
+                setCustomWorldId(w.id);
+                if (face === w.emoji) {
+                  setFace(resolveStudentFace(undefined, name || "student", w.emoji));
+                }
+              }}
               className={`flex items-center gap-2 rounded-xl border-2 p-2.5 text-left text-sm font-bold transition-all cursor-pointer ${
                 customWorldId === w.id
                   ? "border-ink bg-honey text-ink shadow-[2px_2px_0_#3A2E28]"
@@ -379,21 +394,26 @@ export function AvatarBuilder({
           </button>
         </div>
 
-        {/* Character Faces */}
+        {/* Character Faces (Distinct Learner Personas) */}
         {!photoUrl && (
           <>
-            <p className="font-display mb-2 text-sm font-bold uppercase text-inksoft">
-              Or pick an emoji character
-            </p>
-            <div className="mb-4 flex max-h-28 flex-wrap gap-2 overflow-y-auto rounded-xl border-2 border-ink/10 bg-card-warm p-2">
-              {AVATAR_FACES.map((f) => (
+            <div className="mb-2 flex items-center justify-between">
+              <p className="font-display text-sm font-bold uppercase text-inksoft">
+                Pick a learner character avatar
+              </p>
+              <span className="text-xs font-semibold text-inksoft">Distinct from team</span>
+            </div>
+            <div className="mb-4 flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-xl border-2 border-ink/10 bg-card-warm p-2">
+              {STUDENT_CHARACTER_AVATARS.filter((f) => f.emoji !== currentWorldEmoji).map((f) => (
                 <button
-                  key={f.id}
+                  key={f.emoji}
                   type="button"
                   onClick={() => setFace(f.emoji)}
                   title={f.label}
-                  className={`grid size-10 place-items-center rounded-xl border-2 text-2xl cursor-pointer ${
-                    face === f.emoji ? "border-coral bg-coral/15" : "border-transparent bg-paper"
+                  className={`grid size-10 place-items-center rounded-xl border-2 text-2xl transition-all cursor-pointer ${
+                    face === f.emoji
+                      ? "border-coral bg-coral/20 scale-105 shadow-[2px_2px_0_#FF6B69]"
+                      : "border-transparent bg-paper hover:bg-cream"
                   }`}
                 >
                   <span aria-hidden>{f.emoji}</span>

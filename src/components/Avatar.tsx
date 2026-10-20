@@ -1,11 +1,13 @@
 import type { CustomWorld, Student } from "@/lib/app-types";
-import { ACCESSORIES, DEFAULT_CUSTOM_WORLDS, THEMES } from "@/lib/defaults";
+import { DEFAULT_CUSTOM_WORLDS, THEMES } from "@/lib/defaults";
 import {
   DEFAULT_FRAME_ID,
   DEFAULT_BACKGROUND_ID,
   DEFAULT_ADORNMENT_ID,
   getStoreItem,
 } from "@/lib/store-items";
+import { FrameArtOverlay } from "./FrameArtOverlay";
+import { resolveStudentFace } from "@/lib/avatar-faces";
 
 const RING: Record<string, string> = {
   sky: "border-sky/60 shadow-[0_0_0_2px_rgba(56,189,248,0.3)]",
@@ -24,6 +26,8 @@ export function Avatar({
     Partial<
       Pick<
         Student,
+        | "id"
+        | "name"
         | "accessories"
         | "face"
         | "tint"
@@ -44,8 +48,8 @@ export function Avatar({
 
   const theme = THEMES.find((t) => t.key === student.theme) ?? {
     key: "space" as const,
-    emoji: "🚀",
-    label: "Space",
+    emoji: "🛸",
+    label: "Space Explorers",
     color: "sky",
   };
 
@@ -63,9 +67,12 @@ export function Avatar({
   const bgItem = getStoreItem(bgId);
   const adornmentItem = getStoreItem(adornmentId);
 
+  // Distinct character face guaranteed not to match the team/world emblem
+  const studentKey = student.name || student.id || "student";
+  const characterFace = resolveStudentFace(student.face, studentKey, worldEmoji);
+
   const dims =
     size === "lg" ? "size-28 text-6xl" : size === "sm" ? "size-10 text-xl" : "size-14 text-3xl";
-  const badge = size === "lg" ? "text-2xl" : size === "sm" ? "text-[10px]" : "text-sm";
   const worldBadgeSize =
     size === "lg"
       ? "size-8 text-base -bottom-1 -left-1"
@@ -90,19 +97,15 @@ export function Avatar({
 
   return (
     <div className={`relative shrink-0 select-none ${dims}`}>
-      {/* Outer Layer: Avatar Frame Border & Glow */}
-      <div
-        className={`relative grid size-full place-items-center overflow-hidden rounded-full border-3 transition-all ${
-          frameItem?.frameBorderClass ?? "border-[#965a29]"
-        } ${frameItem?.frameShadowClass ?? fallbackRing} ${dims.split(" ")[1] ?? ""}`}
-      >
-        {/* Background Surface (From Star Store or Theme fallback) */}
+      {/* 1. Inner Avatar Character Face & Background (Clipped neatly inside the circle) */}
+      <div className="absolute inset-0 size-full overflow-hidden rounded-full">
+        {/* Background Surface (From Star Store or Theme default) */}
         <div
           className={`absolute inset-0 size-full ${bgItem?.bgClass ?? "bg-[#fdf6ec]"}`}
           style={bgItem?.bgStyle}
         />
 
-        {/* Character Face / Avatar Photo */}
+        {/* Character Face / Avatar Photo (Learner Persona, distinct from group) */}
         <div className="relative z-10 grid size-full place-items-center">
           {student.photoUrl ? (
             <img
@@ -112,14 +115,24 @@ export function Avatar({
             />
           ) : (
             <span aria-hidden className="select-none drop-shadow-xs">
-              {student.face || theme.emoji}
+              {characterFace}
             </span>
           )}
         </div>
       </div>
 
-      {/* Frame Gem / Adornment (Anchor to frame rim) */}
-      {adornmentItem?.adornmentEmoji && (
+      {/* 2. Outer Frame Border, Glow Halo, and Custom SVG Frame Art Overlay */}
+      <div
+        className={`pointer-events-none absolute inset-0 size-full rounded-full border-3 transition-all ${
+          frameItem?.frameBorderClass ?? "border-[#965a29]"
+        } ${frameItem?.frameShadowClass ?? fallbackRing}`}
+      >
+        {/* Fun SVG Frame Art: Vines, Dragon Scales, Cosmic Nebula, Neon Arcade, etc. */}
+        <FrameArtOverlay frameId={frameId} />
+      </div>
+
+      {/* 3. Frame Gem / Adornment (Only displayed if purchased/equipped from Star Store) */}
+      {adornmentItem?.adornmentEmoji && adornmentId !== DEFAULT_ADORNMENT_ID && (
         <div
           className={`absolute z-20 flex items-center justify-center pointer-events-none drop-shadow-md ${adornmentSize} ${getAdornmentPosClass(
             adornmentItem.adornmentPosition,
@@ -131,7 +144,7 @@ export function Avatar({
         </div>
       )}
 
-      {/* Persistent World / Group Badge Indicator */}
+      {/* 4. Persistent World / Group Team Badge Indicator (Corner flag) */}
       <div
         className={`absolute z-20 flex items-center justify-center rounded-full border-2 border-paper bg-card-warm shadow-xs ${worldBadgeSize}`}
         title={`World: ${worldLabel}`}
@@ -139,17 +152,6 @@ export function Avatar({
       >
         <span aria-hidden>{worldEmoji}</span>
       </div>
-
-      {/* Legacy Accessories (Fallback if student has legacy accessory items) */}
-      {student.accessories && student.accessories.length > 0 && !adornmentItem?.adornmentEmoji && (
-        <div className="absolute z-20 -top-1 -right-1 flex flex-col gap-0.5">
-          {student.accessories.slice(0, 2).map((a) => (
-            <span key={a} className={badge} aria-hidden>
-              {ACCESSORIES.find((x) => x.id === a)?.emoji ?? a}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

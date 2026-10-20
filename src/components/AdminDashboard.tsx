@@ -13,9 +13,11 @@ import {
   Plus,
   Printer,
   Sparkles,
+  Star,
   Trash2,
   Users,
 } from "lucide-react";
+import { resolveStudentFace } from "@/lib/avatar-faces";
 import type {
   AppState,
   Category,
@@ -227,9 +229,14 @@ export function AdminDashboard({
         ...rows.map((r, i) => ({
           id: r.id?.trim() || `ST-${Date.now()}-${i}`,
           name: r.name,
+          face: resolveStudentFace(undefined, r.name, "🛸"),
           theme: "space" as const,
           accessories: [],
           stars: 0,
+          unlockedItems: ["frame_bronze", "bg_parchment", "adorn_none"],
+          activeFrame: "frame_bronze",
+          activeBackground: "bg_parchment",
+          activeAdornment: "adorn_none",
         })),
       ],
     }));

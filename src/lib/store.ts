@@ -5,6 +5,8 @@ import { applyTheme } from "./themes";
 
 const KEY = "snickle-state-v1";
 
+import { resolveStudentFace } from "./avatar-faces";
+
 const OLD_DEFAULTS = ["Theo", "Amara", "Noor", "Milo", "Sofia"];
 
 function migrateCategory(c: Category): Category {
@@ -22,7 +24,16 @@ function migrateStudents(students: Student[] | undefined): Student[] {
   if (isLegacy) {
     return DEFAULT_STATE.students;
   }
-  return students;
+  return students.map((s) => ({
+    ...s,
+    accessories: [], // Clean out legacy accessories so no stray emojis appear
+    unlockedItems: s.unlockedItems || ["frame_bronze", "bg_parchment", "adorn_none"],
+    activeFrame: s.activeFrame || "frame_bronze",
+    activeBackground: s.activeBackground || "bg_parchment",
+    activeAdornment: s.activeAdornment || "adorn_none",
+    stars: typeof s.stars === "number" ? s.stars : 0,
+    face: resolveStudentFace(s.face, s.name, s.theme),
+  }));
 }
 
 export function loadState(): AppState {

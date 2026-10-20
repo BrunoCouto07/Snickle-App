@@ -1,11 +1,11 @@
 import type { AppState, Category, CustomWorld, Student, ThemeKey, Lang } from "./app-types";
 
 export const THEMES: { key: ThemeKey; emoji: string; label: string; color: string }[] = [
-  { key: "space", emoji: "🚀", label: "Space", color: "sky" },
-  { key: "farm", emoji: "🐮", label: "Farm", color: "leaf" },
-  { key: "forest", emoji: "🦊", label: "Forest", color: "apricot" },
-  { key: "sea", emoji: "🐬", label: "Sea", color: "sky" },
-  { key: "superhero", emoji: "🦸", label: "Superhero", color: "coral" },
+  { key: "space", emoji: "🛸", label: "Space Explorers", color: "sky" },
+  { key: "farm", emoji: "🚜", label: "Farm Fields", color: "leaf" },
+  { key: "forest", emoji: "🌲", label: "Enchanted Forest", color: "apricot" },
+  { key: "sea", emoji: "🌊", label: "Deep Sea", color: "sky" },
+  { key: "superhero", emoji: "⚡", label: "Hero Squad", color: "coral" },
 ];
 
 export const DEFAULT_CUSTOM_WORLDS: CustomWorld[] = [
@@ -18,7 +18,7 @@ export const DEFAULT_CUSTOM_WORLDS: CustomWorld[] = [
   },
   { id: "world-dino", label: "Dino Diggers", emoji: "🦕", color: "leaf", frameStyle: "dino" },
   { id: "world-ocean", label: "Deep Sea Divers", emoji: "🌊", color: "sky", frameStyle: "ocean" },
-  { id: "world-safari", label: "Jungle Safari", emoji: "🦁", color: "honey", frameStyle: "safari" },
+  { id: "world-safari", label: "Jungle Safari", emoji: "🌴", color: "honey", frameStyle: "safari" },
   { id: "world-stars", label: "Super Stars", emoji: "⭐", color: "coral", frameStyle: "stars" },
 ];
 
@@ -422,14 +422,15 @@ export const DEFAULT_CATEGORIES: Category[] = [
 const student = (
   id: string,
   name: string,
+  face: string,
   theme: ThemeKey,
-  acc: string[],
   stars: number,
 ): Student => ({
   id,
   name,
+  face,
   theme,
-  accessories: acc,
+  accessories: [],
   stars,
   unlockedItems: ["frame_bronze", "bg_parchment", "adorn_none"],
   activeFrame: "frame_bronze",
@@ -439,11 +440,11 @@ const student = (
 
 export const DEFAULT_STATE: AppState = {
   students: [
-    student("ST-001", "Aurora", "space", ["cap"], 4),
-    student("ST-002", "Robert", "farm", ["bow"], 2),
-    student("ST-003", "Camari", "sea", ["glasses"], 6),
-    student("ST-004", "Lucy", "forest", ["crown"], 3),
-    student("ST-005", "Diego", "superhero", ["star"], 8),
+    student("ST-001", "Aurora", "🐱", "space", 4),
+    student("ST-002", "Robert", "🐶", "farm", 2),
+    student("ST-003", "Camari", "🐧", "sea", 6),
+    student("ST-004", "Lucy", "🦊", "forest", 3),
+    student("ST-005", "Diego", "🦸", "superhero", 8),
   ],
   categories: DEFAULT_CATEGORIES,
   choices: [],
