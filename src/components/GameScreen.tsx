@@ -36,6 +36,7 @@ import {
 } from "@/lib/speech";
 import { Avatar } from "./Avatar";
 import { Confetti } from "./Confetti";
+import { TournamentBracket, type BracketResult } from "./TournamentBracket";
 
 interface Props {
   student: Student;
@@ -68,6 +69,7 @@ export function GameScreen({
   const [catIndex, setCatIndex] = useState(0);
   const [bracket, setBracket] = useState<CategoryOption[]>([]);
   const [winners, setWinners] = useState<CategoryOption[]>([]);
+  const [bracketHistory, setBracketHistory] = useState<BracketResult[]>([]);
   const [pairIndex, setPairIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [celebrate, setCelebrate] = useState(false);
@@ -234,6 +236,16 @@ export function GameScreen({
     window.setTimeout(() => {
       setSelected(null);
       if (state.mode === "advanced") {
+        setBracketHistory((prev) => [
+          ...prev,
+          {
+            category: category!,
+            contenders: category!.options.slice(0, 6),
+            semiWinners: [],
+            champion: opt,
+            mode: "advanced",
+          },
+        ]);
         onRecord(category!.id, opt.id, transcript || undefined);
         setTranscript("");
         advanceCategory();
@@ -243,12 +255,61 @@ export function GameScreen({
         setWinners((w) => [...w, opt]);
         setPairIndex((p) => p + 1);
       } else {
+        setBracketHistory((prev) => [
+          ...prev,
+          {
+            category: category!,
+            contenders: bracket.slice(0, 4),
+            semiWinners: [...winners],
+            champion: opt,
+            mode: "simple",
+          },
+        ]);
         onRecord(category!.id, opt.id, transcript || undefined);
         setTranscript("");
         advanceCategory();
       }
     }, 450);
   };
+
+  const effectiveBracketResults = useMemo<BracketResult[]>(() => {
+    if (bracketHistory.length > 0) return bracketHistory;
+    const list: BracketResult[] = [];
+    if (sessionChoices.length > 0) {
+      sessionChoices.forEach((ch) => {
+        const cat = categoryMap.get(ch.categoryId);
+        if (!cat) return;
+        const champ = cat.options.find((o) => o.id === ch.optionId);
+        if (!champ) return;
+        const pool = cat.options.slice(0, 4);
+        const poolWithChamp = pool.some((p) => p.id === champ.id)
+          ? pool
+          : [champ, ...pool.slice(0, 3)];
+        list.push({
+          category: cat,
+          contenders: poolWithChamp,
+          semiWinners: [champ, poolWithChamp.find((p) => p.id !== champ.id) || champ],
+          champion: champ,
+          mode: state.mode,
+        });
+      });
+    }
+    if (list.length === 0 && categories[0]) {
+      const cat = categories[0];
+      const pool = cat.options.slice(0, 4);
+      const champ = pool[0];
+      if (champ) {
+        list.push({
+          category: cat,
+          contenders: pool,
+          semiWinners: [champ, pool[1] || champ],
+          champion: champ,
+          mode: state.mode,
+        });
+      }
+    }
+    return list;
+  }, [bracketHistory, sessionChoices, categoryMap, categories, state.mode]);
 
   const startMic = () => {
     onActivity();
@@ -266,18 +327,25 @@ export function GameScreen({
 
   if (celebrate) {
     return (
-      <div className="card-pop relative overflow-hidden p-8 text-center max-w-2xl mx-auto">
+      <div className="card-pop relative overflow-hidden p-5 sm:p-8 text-center max-w-4xl mx-auto">
         <Confetti />
         <motion.div
           initial={{ scale: 0.3, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 12 }}
-          className="mx-auto mb-4 grid size-32 place-items-center rounded-full border-4 border-honey bg-honey/25"
+          className="mx-auto mb-4 grid size-32 place-items-center rounded-full border-4 border-honey bg-honey/25 shadow-[4px_4px_0_#3A2E28]"
         >
           <Star className="size-16 fill-honey text-honey" />
         </motion.div>
-        <h2 className="font-display text-4xl font-bold mb-1">{t.done}</h2>
-        <p className="font-hand text-2xl text-inksoft mb-8">{t.starEarned}</p>
+        <h2 className="font-display text-4xl font-black mb-1">{t.done}</h2>
+        <p className="font-hand text-2xl text-inksoft mb-4">{t.starEarned}</p>
+
+        {/* === GAMIFIED TOURNAMENT BRACKET & WINNER PODIUM === */}
+        <TournamentBracket
+          results={effectiveBracketResults}
+          lang={lang}
+          studentName={student.name}
+        />
 
         {/* === START NEW INFOGRAPHIC SUMMARY === */}
         <div className="bg-card-warm border-2 border-ink/15 rounded-3xl p-5 sm:p-6 mb-8 text-left shadow-sm">
@@ -477,17 +545,19 @@ export function GameScreen({
               onFinish();
               setCelebrate(false);
               setCatIndex(0);
+              setBracketHistory([]);
             }}
-            className="font-display h-14 rounded-2xl border-2 border-ink bg-ink px-8 font-bold text-cream shadow-[4px_4px_0_#FFC63F] hover:shadow-[2px_2px_0_#FFC63F] hover:translate-y-[2px] transition-all"
+            className="font-display h-14 rounded-2xl border-2 border-ink bg-ink px-8 font-bold text-cream shadow-[4px_4px_0_#FFC63F] hover:shadow-[2px_2px_0_#FFC63F] hover:translate-y-[2px] transition-all cursor-pointer"
           >
             {t.playAgain}
           </button>
           <button
             onClick={() => {
               onFinish();
+              setBracketHistory([]);
               onBack();
             }}
-            className="font-display h-14 rounded-2xl border-2 border-ink/20 bg-card-warm hover:bg-ink/5 px-8 font-bold transition-colors"
+            className="font-display h-14 rounded-2xl border-2 border-ink/20 bg-card-warm hover:bg-ink/5 px-8 font-bold transition-colors cursor-pointer"
           >
             {t.backToRoster}
           </button>

@@ -58,12 +58,12 @@ export function SupportTeacherModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-2.5">
           <a
-            href="https://buymeacoffee.com"
+            href="https://ko-fi.com/snickleapp"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-display flex h-13 w-full items-center justify-center gap-2.5 rounded-2xl border-2 border-ink bg-honey px-4 text-sm font-bold text-ink shadow-[3px_3px_0_#3A2E28] transition-transform hover:-translate-y-0.5"
+            className="font-display flex h-13 w-full items-center justify-center gap-2.5 rounded-2xl border-2 border-ink bg-[#FFDD00] hover:bg-[#FFD200] px-4 text-sm font-black text-ink shadow-[3px_3px_0_#3A2E28] transition-all hover:-translate-y-0.5 cursor-pointer"
           >
-            <Coffee className="size-4.5" /> Buy Me a Coffee
+            <span className="text-lg">☕</span> Support Snickle (Buy me a coffee)
             <ExternalLink className="size-3.5 opacity-60 ml-auto" />
           </a>
 

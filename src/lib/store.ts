@@ -43,6 +43,10 @@ export function loadState(): AppState {
     if (!raw) return DEFAULT_STATE;
     const parsed = JSON.parse(raw) as Partial<AppState>;
     const merged: AppState = { ...DEFAULT_STATE, ...parsed };
+    const storedPin = window.localStorage.getItem("snickle_teacher_pin");
+    if (storedPin && /^\d{4}$/.test(storedPin)) {
+      merged.pin = storedPin;
+    }
     return {
       ...merged,
       students: migrateStudents(merged.students),

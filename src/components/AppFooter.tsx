@@ -1,5 +1,6 @@
 import { Heart, HelpCircle, Mail, Printer, ShieldCheck, Sparkles, Volume2 } from "lucide-react";
 import { SupportTeacherButton } from "./SupportTeacherModal";
+import { KofiButton } from "./KofiButton";
 
 interface Props {
   onOpenGuide: () => void;
@@ -86,6 +87,7 @@ export function AppFooter({ onOpenGuide, onOpenContact, onOpenBackup, onOpenSupp
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
+              <KofiButton size="sm" />
               <SupportTeacherButton onClick={onOpenSupport} />
               <button
                 onClick={onOpenGuide}

@@ -387,7 +387,13 @@ function Home() {
 
       {locking && (
         <TeacherLock
-          pin={state.pin}
+          pin={state.pin || "1234"}
+          scramblePinPad={Boolean(state.scramblePinPad)}
+          mathChallengeEnabled={state.mathChallengeEnabled !== false}
+          mathChallengeMode={state.mathChallengeMode ?? "multiplication"}
+          onPinChange={(newPin) => {
+            update((s) => ({ ...s, pin: newPin }));
+          }}
           onCancel={() => setLocking(false)}
           onUnlock={() => {
             setLocking(false);

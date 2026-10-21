@@ -7,6 +7,7 @@ import {
   Heart,
   Image as ImageIcon,
   Loader2,
+  Lock,
   LogOut,
   Mail,
   Pencil,
@@ -44,6 +45,7 @@ import { SupportTeacherModal } from "./SupportTeacherModal";
 import { ContactModal } from "./ContactModal";
 import { FeatureCoachmarks } from "./FeatureCoachmarks";
 import { resetAllCoachmarks, type CoachmarkScreen } from "@/lib/coachmarks";
+import { KofiButton } from "./KofiButton";
 
 const BAR_COLORS = ["bg-coral", "bg-sky", "bg-honey", "bg-leaf", "bg-apricot", "bg-ink"];
 
@@ -321,12 +323,13 @@ export function AdminDashboard({
 
   return (
     <div className="card-pop p-5">
-      <div className="mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="font-display truncate text-2xl font-bold">Teacher Dashboard</h2>
           <p className="font-hand text-xl text-inksoft">{getClassSubtitle(state)}</p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <KofiButton size="sm" />
           <button
             onClick={() => setShowSyncModal(true)}
             title="Classroom Sync & Backup status. Click to download or restore backup."
@@ -922,17 +925,162 @@ export function AdminDashboard({
                 </span>
               </div>
             </Field>
-            <Field label="Teacher PIN (4 digits)">
-              <input
-                value={state.pin}
-                inputMode="numeric"
-                maxLength={4}
-                onChange={(e) =>
-                  update((s) => ({ ...s, pin: e.target.value.replace(/\D/g, "").slice(0, 4) }))
-                }
-                className="h-12 w-full rounded-2xl border-2 border-ink/10 bg-paper px-4 outline-none focus:border-honey"
-              />
-            </Field>
+            {/* Smartboard Passcode Security & Scrambling */}
+            <div className="sm:col-span-2 rounded-2xl border-2 border-ink/10 bg-paper p-4 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-9 place-items-center rounded-xl bg-ink text-cream">
+                  <Lock className="size-4" />
+                </span>
+                <div>
+                  <h4 className="font-display text-base font-bold text-ink">
+                    Smartboard Passcode Security
+                  </h4>
+                  <p className="text-xs text-inksoft">
+                    Protect teacher settings and analytics from curious little hands.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Teacher PIN */}
+                <div>
+                  <label className="font-display text-xs font-bold text-ink mb-1 block">
+                    Teacher PIN (4 digits)
+                  </label>
+                  <input
+                    value={state.pin}
+                    inputMode="numeric"
+                    maxLength={4}
+                    onChange={(e) => {
+                      const newPin = e.target.value.replace(/\D/g, "").slice(0, 4);
+                      update((s) => ({ ...s, pin: newPin }));
+                      if (typeof window !== "undefined") {
+                        if (newPin && newPin !== "1234") {
+                          localStorage.setItem("snickle_custom_pin_set", "true");
+                          localStorage.setItem("snickle_teacher_pin", newPin);
+                        } else if (newPin === "1234") {
+                          localStorage.removeItem("snickle_custom_pin_set");
+                          localStorage.setItem("snickle_teacher_pin", "1234");
+                        }
+                      }
+                    }}
+                    placeholder="1234"
+                    className="h-12 w-full rounded-2xl border-2 border-ink/10 bg-cream/40 px-4 font-mono font-bold text-base outline-none focus:border-honey"
+                  />
+                  <span className="text-[11px] text-inksoft mt-1 block">
+                    {state.pin === "1234" || !state.pin
+                      ? "⚠️ Using default classroom PIN (1234)."
+                      : "✓ Custom PIN set."}
+                  </span>
+                </div>
+
+                {/* Number Scrambling Toggle */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-display text-xs font-bold text-ink">
+                      Number Scrambling
+                    </label>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={Boolean(state.scramblePinPad)}
+                      onClick={() => update((s) => ({ ...s, scramblePinPad: !s.scramblePinPad }))}
+                      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors cursor-pointer ${
+                        state.scramblePinPad ? "bg-leaf" : "bg-ink/20"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block size-5 transform rounded-full bg-paper transition-transform shadow-sm ${
+                          state.scramblePinPad ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-xs text-inksoft leading-relaxed">
+                    Prevents screen tracking from prying eyes. Randomizes the position of the PIN
+                    pad buttons.
+                  </p>
+                </div>
+              </div>
+
+              {/* Math Challenge Access */}
+              <div className="border-t border-ink/10 pt-4">
+                <div className="flex items-center justify-between mb-1">
+                  <div>
+                    <label className="font-display text-xs font-bold text-ink">
+                      Math Challenge Access
+                    </label>
+                    <p className="text-xs text-inksoft">
+                      Require solving a math problem before entering the PIN to deter students.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={state.mathChallengeEnabled !== false}
+                    onClick={() =>
+                      update((s) => ({
+                        ...s,
+                        mathChallengeEnabled: s.mathChallengeEnabled === false ? true : false,
+                      }))
+                    }
+                    className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
+                      state.mathChallengeEnabled !== false ? "bg-leaf" : "bg-ink/20"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block size-5 transform rounded-full bg-paper transition-transform shadow-sm ${
+                        state.mathChallengeEnabled !== false ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {state.mathChallengeEnabled !== false && (
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => update((s) => ({ ...s, mathChallengeMode: "addition" }))}
+                      className={`flex items-start gap-2.5 rounded-xl border-2 p-2.5 text-left transition-all cursor-pointer ${
+                        state.mathChallengeMode === "addition"
+                          ? "border-honey bg-honey/15 shadow-[2px_2px_0_#3A2E28]"
+                          : "border-ink/10 bg-cream/40 hover:bg-cream"
+                      }`}
+                    >
+                      <span className="font-mono text-base font-bold text-ink">➕</span>
+                      <div>
+                        <div className="font-display text-xs font-bold text-ink">
+                          Addition (Faster access)
+                        </div>
+                        <div className="text-[11px] text-inksoft">
+                          Single/double digit addition for rapid teacher unlock.
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => update((s) => ({ ...s, mathChallengeMode: "multiplication" }))}
+                      className={`flex items-start gap-2.5 rounded-xl border-2 p-2.5 text-left transition-all cursor-pointer ${
+                        (state.mathChallengeMode ?? "multiplication") === "multiplication"
+                          ? "border-honey bg-honey/15 shadow-[2px_2px_0_#3A2E28]"
+                          : "border-ink/10 bg-cream/40 hover:bg-cream"
+                      }`}
+                    >
+                      <span className="font-mono text-base font-bold text-ink">✖️</span>
+                      <div>
+                        <div className="font-display text-xs font-bold text-ink">
+                          Multiplication (Higher security)
+                        </div>
+                        <div className="text-[11px] text-inksoft">
+                          Times tables challenge to deter older grade schoolers.
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
             <Field label="Default avatar color">
               <div className="flex gap-2">
                 {COLOR_FILTERS.map((c) => (
@@ -1140,6 +1288,7 @@ export function AdminDashboard({
                 </p>
               </div>
               <div className="flex flex-col gap-2">
+                <KofiButton size="sm" className="w-full justify-center" />
                 <button
                   onClick={() => setShowContactModal(true)}
                   className="font-display flex items-center justify-center gap-1.5 rounded-xl border-2 border-ink bg-paper px-3 py-2 text-xs font-bold text-ink hover:bg-card-warm transition-colors"

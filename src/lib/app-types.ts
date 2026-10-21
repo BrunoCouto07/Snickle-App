@@ -72,11 +72,16 @@ export interface ChoiceRecord {
   note?: string;
 }
 
+export type MathChallengeMode = "addition" | "multiplication";
+
 export interface AppState {
   students: Student[];
   categories: Category[];
   choices: ChoiceRecord[];
   pin: string;
+  scramblePinPad?: boolean;
+  mathChallengeEnabled?: boolean;
+  mathChallengeMode?: MathChallengeMode;
   lang: Lang;
   mode: "simple" | "advanced";
   lastSyncedAt: number | null;
