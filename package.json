@@ -13,6 +13,7 @@
   },
   "overrides": {
     "rolldown": "1.2.1"
+    "@tanstack/router-core": "1.168.60"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -87,8 +88,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
-  },
-    "overrides": {
-    "@tanstack/router-core": "1.168.60"
   }
 }
