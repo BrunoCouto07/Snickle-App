@@ -6,6 +6,7 @@ import { DEFAULT_CUSTOM_WORLDS, THEMES } from "@/lib/defaults";
 import { UI_TEXT } from "@/lib/speech";
 import { getClassSubtitle } from "@/lib/class-info";
 import { Avatar } from "./Avatar";
+import { playSoundEffect } from "@/hooks/useSoundEffects";
 
 type ColumnOption = 2 | 3 | 4;
 
@@ -211,6 +212,7 @@ function StudentCard({
     if (Date.now() < suppressClickUntil.current) {
       return;
     }
+    playSoundEffect("pop");
     onSelect(student);
   };
 
@@ -315,6 +317,7 @@ function StudentCard({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            playSoundEffect("click");
             onOpenStore?.(student);
           }}
           className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-ink/15 bg-paper hover:bg-honey text-xs font-black text-ink shadow-[1px_1px_0_#3A2E28] transition-all cursor-pointer"

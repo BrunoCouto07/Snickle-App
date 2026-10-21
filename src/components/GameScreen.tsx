@@ -37,6 +37,7 @@ import {
 import { Avatar } from "./Avatar";
 import { Confetti } from "./Confetti";
 import { TournamentBracket, type BracketResult } from "./TournamentBracket";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 interface Props {
   student: Student;
@@ -63,6 +64,7 @@ export function GameScreen({
   onSwapItem,
   sessionStartTime,
 }: Props) {
+  const { playPop, playFanfare, playClick, playToken } = useSoundEffects();
   const lang = state.lang;
   const t = UI_TEXT[lang];
   const categories = useMemo(() => state.categories.filter((c) => c.enabled), [state.categories]);
@@ -83,9 +85,9 @@ export function GameScreen({
 
   useEffect(() => {
     if (celebrate) {
-      playAudio("/sounds/fanfare.mp3"); // Placeholder audio path
+      playFanfare();
     }
-  }, [celebrate]);
+  }, [celebrate, playFanfare]);
 
   const DONUT_COLORS = [
     "#FF6B69",
@@ -230,6 +232,7 @@ export function GameScreen({
 
   const choose = (opt: CategoryOption) => {
     if (selected !== null) return; // Prevent rapid clicks
+    playPop();
     onActivity();
     setSelected(opt.id);
     speak(getOptionLabel(opt, lang), lang);

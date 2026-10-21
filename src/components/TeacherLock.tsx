@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Check, KeyRound, Lock, ShieldAlert, Sparkles, X } from "lucide-react";
 import type { MathChallengeMode } from "@/lib/app-types";
+import { playSoundEffect } from "@/hooks/useSoundEffects";
 
 interface TeacherLockProps {
   pin: string;
@@ -151,8 +152,10 @@ export function TeacherLock({
   const submitPin = useCallback(
     (value: string) => {
       if (value === effectivePin) {
+        playSoundEffect("success");
         handleUnlockSuccess(value);
       } else {
+        playSoundEffect("error");
         setError("Wrong PIN. Try again!");
         setEntry("");
       }
@@ -288,9 +291,11 @@ export function TeacherLock({
                   key={o}
                   onClick={() => {
                     if (o === mathResult) {
+                      playSoundEffect("success");
                       setError("");
                       setStep("pin");
                     } else {
+                      playSoundEffect("error");
                       setError("Try again! That's not quite right.");
                     }
                   }}
@@ -404,6 +409,7 @@ export function TeacherLock({
                   key={k || `blank-${index}`}
                   disabled={demoState.active}
                   onClick={() => {
+                    playSoundEffect("click");
                     setError("");
                     if (k === "⌫") return setEntry((e) => e.slice(0, -1));
                     if (k === "") return;

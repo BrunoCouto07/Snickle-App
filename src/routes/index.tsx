@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Cloud, CloudOff, Globe, HelpCircle, Heart, Lock, Star } from "lucide-react";
+import {
+  Cloud,
+  CloudOff,
+  Globe,
+  HelpCircle,
+  Heart,
+  Lock,
+  Star,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import type { Category, Lang, Student } from "@/lib/app-types";
 import { useAppState } from "@/lib/store";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { UI_TEXT } from "@/lib/speech";
 import { freshFromLibrary, rotateCategory, swapSingleOption } from "@/lib/item-library";
 import { StudentRoster } from "@/components/StudentRoster";
@@ -47,6 +58,7 @@ const IDLE_MS = 3 * 60 * 1000;
 
 function Home() {
   const { state, update, syncing } = useAppState();
+  const { playClick, playToken, playComplete, playPop, isMuted, toggleMute } = useSoundEffects();
   const [screen, setScreen] = useState<"roster" | "game" | "admin">("roster");
   const [active, setActive] = useState<Student | null>(null);
   const [building, setBuilding] = useState(false);
@@ -202,18 +214,40 @@ function Home() {
               <span className="hidden sm:inline">{syncing ? "Saving" : "Offline Synced"}</span>
             </button>
             <button
-              onClick={() => setShowOnboarding(true)}
+              onClick={toggleMute}
+              aria-label={isMuted ? "Unmute UI sound effects" : "Mute UI sound effects"}
+              title={
+                isMuted
+                  ? "Sound Effects Muted (Click to Unmute)"
+                  : "Sound Effects Enabled (Click to Mute)"
+              }
+              className={`grid size-11 place-items-center rounded-full border-2 transition-colors cursor-pointer ${
+                isMuted
+                  ? "border-coral/30 bg-coral/10 text-coral hover:bg-coral/20"
+                  : "border-ink/10 bg-paper text-ink hover:bg-card-warm"
+              }`}
+            >
+              {isMuted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
+            </button>
+            <button
+              onClick={() => {
+                playClick();
+                setShowOnboarding(true);
+              }}
               aria-label="App tutorial guide"
               title="Classroom Guide & Walkthrough"
-              className="grid size-11 place-items-center rounded-full border-2 border-ink/10 bg-paper text-ink hover:bg-card-warm transition-colors"
+              className="grid size-11 place-items-center rounded-full border-2 border-ink/10 bg-paper text-ink hover:bg-card-warm transition-colors cursor-pointer"
             >
               <HelpCircle className="size-5" />
             </button>
             {screen !== "admin" && (
               <button
-                onClick={() => setLocking(true)}
+                onClick={() => {
+                  playClick();
+                  setLocking(true);
+                }}
                 aria-label="Teacher admin"
-                className="grid size-11 place-items-center rounded-full border-2 border-ink bg-ink text-cream shadow-[3px_3px_0_#FFC63F]"
+                className="grid size-11 place-items-center rounded-full border-2 border-ink bg-ink text-cream shadow-[3px_3px_0_#FFC63F] cursor-pointer"
               >
                 <Lock className="size-5" />
               </button>
@@ -226,10 +260,20 @@ function Home() {
         {screen === "roster" && (
           <StudentRoster
             state={state}
-            onAdd={() => setBuilding(true)}
-            onEditStudent={(s) => setEditingStudent(s)}
-            onOpenStore={(s) => setStoreStudent(s)}
+            onAdd={() => {
+              playClick();
+              setBuilding(true);
+            }}
+            onEditStudent={(s) => {
+              playClick();
+              setEditingStudent(s);
+            }}
+            onOpenStore={(s) => {
+              playClick();
+              setStoreStudent(s);
+            }}
             onSelect={(s) => {
+              playPop();
               setActive(s);
               bump();
               setScreen("game");
@@ -260,15 +304,17 @@ function Home() {
                 ],
               }))
             }
-            onFinish={() =>
+            onFinish={() => {
+              playToken();
+              playComplete();
               update((s) => ({
                 ...s,
                 students: s.students.map((st) =>
                   st.id === active.id ? { ...st, stars: st.stars + 1 } : st,
                 ),
                 lastSyncedAt: Date.now(),
-              }))
-            }
+              }));
+            }}
             onBack={() => {
               setActive(null);
               setScreen("roster");
@@ -322,6 +368,11 @@ function Home() {
             }
           }}
           onAdjustStars={(delta) => {
+            if (delta > 0) {
+              playToken();
+            } else {
+              playClick();
+            }
             if (editingStudent) {
               update((st) => ({
                 ...st,

@@ -43,6 +43,7 @@ import { SyncBackupModal } from "./SyncBackupModal";
 import { OnboardingModal } from "./OnboardingModal";
 import { SupportTeacherModal } from "./SupportTeacherModal";
 import { ContactModal } from "./ContactModal";
+import { playSoundEffect } from "@/hooks/useSoundEffects";
 import { FeatureCoachmarks } from "./FeatureCoachmarks";
 import { resetAllCoachmarks, type CoachmarkScreen } from "@/lib/coachmarks";
 import { KofiButton } from "./KofiButton";
@@ -602,14 +603,15 @@ export function AdminDashboard({
                   </span>
                   <div className="flex items-center gap-0.5 ml-1">
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        playSoundEffect("click");
                         update((st) => ({
                           ...st,
                           students: st.students.map((x) =>
                             x.id === s.id ? { ...x, stars: Math.max(0, x.stars - 1) } : x,
                           ),
-                        }))
-                      }
+                        }));
+                      }}
                       disabled={s.stars <= 0}
                       title="Deduct 1 Star Token"
                       className="size-6 grid place-items-center rounded bg-paper border border-ink/10 text-xs font-bold text-ink hover:bg-honey disabled:opacity-30 cursor-pointer"
@@ -617,28 +619,30 @@ export function AdminDashboard({
                       -1
                     </button>
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        playSoundEffect("token");
                         update((st) => ({
                           ...st,
                           students: st.students.map((x) =>
                             x.id === s.id ? { ...x, stars: x.stars + 1 } : x,
                           ),
-                        }))
-                      }
+                        }));
+                      }}
                       title="Add 1 Star Token"
                       className="size-6 grid place-items-center rounded bg-paper border border-ink/10 text-xs font-bold text-ink hover:bg-honey cursor-pointer"
                     >
                       +1
                     </button>
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        playSoundEffect("token");
                         update((st) => ({
                           ...st,
                           students: st.students.map((x) =>
                             x.id === s.id ? { ...x, stars: x.stars + 5 } : x,
                           ),
-                        }))
-                      }
+                        }));
+                      }}
                       title="Add 5 Star Tokens"
                       className="px-1.5 h-6 grid place-items-center rounded bg-paper border border-ink/10 text-[11px] font-bold text-ink hover:bg-honey cursor-pointer"
                     >

@@ -26,6 +26,7 @@ import {
 import { Avatar } from "./Avatar";
 import { FrameArtOverlay } from "./FrameArtOverlay";
 import { playAudio, speak } from "@/lib/speech";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 interface Props {
   student: Student;
@@ -42,6 +43,7 @@ export function StarStoreModal({
   onUpdateStudent,
   onClose,
 }: Props) {
+  const { playToken, playEquip, playClick, playSuccess } = useSoundEffects();
   const [activeTab, setActiveTab] = useState<StoreCategory>("frame");
   const [tierFilter, setTierFilter] = useState<string>("all");
 
@@ -120,7 +122,8 @@ export function StarStoreModal({
     if (item.category === "adornment") setPreviewAdornment(item.id);
 
     onUpdateStudent(updated);
-    playAudio("/sounds/star.mp3");
+    playToken();
+    playSuccess();
     speak(`Unlocked ${item.name}!`, "en");
     showToast(`⭐ Unlocked and equipped ${item.name}!`);
   };
@@ -139,11 +142,13 @@ export function StarStoreModal({
     if (item.category === "adornment") setPreviewAdornment(item.id);
 
     onUpdateStudent(updated);
+    playEquip();
     showToast(`✓ Equipped ${item.name}`);
   };
 
   // Preview an item on avatar
   const handleItemClick = (item: StoreItem) => {
+    playClick();
     if (item.category === "frame") setPreviewFrame(item.id);
     if (item.category === "background") setPreviewBg(item.id);
     if (item.category === "adornment") setPreviewAdornment(item.id);

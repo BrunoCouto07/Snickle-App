@@ -1,4 +1,5 @@
 import type { Lang } from "./app-types";
+import { playSoundEffect } from "@/hooks/useSoundEffects";
 
 export const LOCALE: Record<Lang, string> = {
   en: "en-US",
@@ -427,8 +428,19 @@ export function speak(text: string | undefined | null, lang: Lang) {
 export function playAudio(src: string) {
   if (typeof window === "undefined") return;
   try {
+    if (src.includes("star") || src.includes("coin") || src.includes("token")) {
+      playSoundEffect("token");
+      return;
+    }
+    if (src.includes("fanfare") || src.includes("celebrate") || src.includes("win")) {
+      playSoundEffect("fanfare");
+      return;
+    }
     const audio = new Audio(src);
-    audio.play().catch((e) => console.warn(`Failed to play audio from ${src}:`, e));
+    audio.play().catch(() => {
+      // Graceful fallback to pleasant UI chime if audio file is not on disk
+      playSoundEffect("success");
+    });
   } catch {
     // Ignore audio playback errors
   }
